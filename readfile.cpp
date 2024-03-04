@@ -41,100 +41,8 @@ using namespace std;
 #include "variables.h" 
 #include "readfile.h"
 
-
-void readfilenew(const char* filename) {
-  string str, cmd; 
-  ifstream in;
-  in.open(filename); 
-  if (in.is_open()) {
-
-    // I need to implement a matrix stack to store transforms.  
-    // This is done using standard STL Templates 
-    stack <mat4> transfstack; 
-    transfstack.push(mat4(1.0));  // identity
-
-    getline (in, str); 
-    while (in) {
-      if ((str.find_first_not_of(" \t\r\n") != string::npos) && (str[0] != '#')) {
-        // Ruled out comment and blank lines 
-
-        stringstream s(str);
-        s >> cmd; 
-        int i; 
-        GLfloat values[10]; // Position and color for light, colors for others
-        // Up to 10 params for cameras.  
-        bool validinput; // Validity of input 
-        if (cmd == "size") {
-                validinput = readvals(s,2,values); 
-                if (validinput) { 
-                  w = (int) values[0]; h = (int) values[1]; 
-                } 
-        } else if (cmd == "camera") { //camera parser 
-          validinput = readvals(s,10,values); // 10 values eye cen up fov
-          if (validinput) {
-
-            // YOUR CODE FOR HW 2 HERE
-            // Use all of values[0...9]
-            // You may need to use the upvector fn in Transform.cpp
-            // to set up correctly. 
-            // Set eyeinit upinit center fovy in variables.h 
-            eyeinit[0]=values[0];
-            eyeinit[1]=values[1];
-            eyeinit[2]=values[2];
-            center[0]=values[3];
-            center[1]=values[4];
-            center[2]=values[5];
-            upinit[0]=values[6];
-            upinit[1]=values[7];
-            upinit[2]=values[8];
-            fovy = values[9];
-            fovx = 2 * atan(tan(fovy * 0.5) * w/h);
-          }
-        }else if (cmd == "sphere" || cmd == "tri" || cmd == "trinormal") {
-          if (numobjects == maxobjects) { // No more objects 
-            cerr << "Reached Maximum Number of Objects " << numobjects << " Will ignore further objects\n";
-          } else {
-            object * obj = &(objects[numobjects]); 
-            obj->radius = 
-            validinput = readvals(s, 1, values); 
-            object * obj; 
-            if(validinput){
-              if (cmd == "sphere") {
-                obj = 
-              }else if (cmd == "tri"){
-
-              }else{
-
-              }
-              obj = &(objects[numobjects]); 
-              // Set the object's light properties
-              for (i = 0; i < 4; i++) {
-                (obj->ambient)[i] = ambient[i]; 
-                (obj->diffuse)[i] = diffuse[i]; 
-                (obj->specular)[i] = specular[i]; 
-                (obj->emission)[i] = emission[i];
-              }
-              obj->shininess = shininess; 
-
-                // Set the object's transform
-                obj->transform = transfstack.top(); 
-              ++numobjects; 
-            }
-          }
-        }
-      }
-      getline (in, str); 
-    }
-
-  }else {
-    cerr << "Unable to Open Input Data File " << filename << "\n"; 
-    throw 2; 
-  }
-}
-
 // You may not need to use the following two functions, but it is provided
 // here for convenience
-
 // The function below applies the appropriate transform to a 4-vector
 void matransform(stack<mat4> &transfstack, GLfloat* values) 
 {
@@ -164,8 +72,7 @@ bool readvals(stringstream &s, const int numvals, GLfloat* values)
   return true; 
 }
 
-void readfile(const char* filename) 
-{
+void readfilenew(const char* filename) {
   string str, cmd; 
   ifstream in;
   in.open(filename); 
@@ -187,78 +94,30 @@ void readfile(const char* filename)
         GLfloat values[10]; // Position and color for light, colors for others
         // Up to 10 params for cameras.  
         bool validinput; // Validity of input 
-
-        // Process the light, add it to database.
-        // Lighting Command
-        if (cmd == "light") {
-          if (numused == numLights) { // No more Lights 
-            cerr << "Reached Maximum Number of Lights " << numused << " Will ignore further lights\n";
-          } else {
-            validinput = readvals(s, 8, values); // Position/color for lts.
-            if (validinput) {
-              // YOUR CODE FOR HW 2 HERE. 
-              // Note that values[0...7] shows the read in values 
-              // Make use of lightposn[] and lightcolor[] arrays in variables.h
-              // Those arrays can then be used in display too.  
-
-              lightposn[4*numused]=values[0];
-              lightposn[4*numused+1]=values[1];
-              lightposn[4*numused+2]=values[2];
-              lightposn[4*numused+3]=values[3];
-              lightcolor[4*numused]=values[4];
-              lightcolor[4*numused+1]=values[5];
-              lightcolor[4*numused+2]=values[6];
-              lightcolor[4*numused+3]=values[7];
-              ++numused; 
-            }
-          }
+        if(cmd == "maxverts"){
+          validinput = readvals(s,1,values);
+          maxverts = values[0];
         }
-
-        // Material Commands 
-        // Ambient, diffuse, specular, shininess properties for each object.
-        // Filling this in is pretty straightforward, so I've left it in 
-        // the skeleton, also as a hint of how to do the more complex ones.
-        // Note that no transforms/stacks are applied to the colors. 
-
-        else if (cmd == "ambient") {
-          validinput = readvals(s, 4, values); // colors 
-          if (validinput) {
-            for (i = 0; i < 4; i++) {
-              ambient[i] = values[i]; 
-            }
-          }
-        } else if (cmd == "diffuse") {
-          validinput = readvals(s, 4, values); 
-          if (validinput) {
-            for (i = 0; i < 4; i++) {
-              diffuse[i] = values[i]; 
-            }
-          }
-        } else if (cmd == "specular") {
-          validinput = readvals(s, 4, values); 
-          if (validinput) {
-            for (i = 0; i < 4; i++) {
-              specular[i] = values[i]; 
-            }
-          }
-        } else if (cmd == "emission") {
-          validinput = readvals(s, 4, values); 
-          if (validinput) {
-            for (i = 0; i < 4; i++) {
-              emission[i] = values[i]; 
-            }
-          }
-        } else if (cmd == "shininess") {
-          validinput = readvals(s, 1, values); 
-          if (validinput) {
-            shininess = values[0]; 
-          }
-        } else if (cmd == "size") {
-          validinput = readvals(s,2,values); 
-          if (validinput) { 
-            w = (int) values[0]; h = (int) values[1]; 
-          } 
-        } else if (cmd == "camera") {
+        else if (cmd == "maxvertnorms"){
+          validinput = readvals(s,1,values);
+          maxvertnorms = values[0];
+        }
+        else if (cmd == "vertex"){
+          validinput = readvals(s,3,values);
+          vector<float> curvert = {values[0], values[1], values[2]};
+          vertexs.push_back(curvert);
+        }
+        else if (cmd == "vertexnormal"){
+          validinput = readvals(s,6,values);
+          vector<float> curvertnorm = {values[0], values[1], values[2], values[3], values[4], values[5]};
+          vertexNormals.push_back(curvertnorm);
+        }
+        else if (cmd == "size") {
+                validinput = readvals(s,2,values); 
+                if (validinput) { 
+                  w = (int) values[0]; h = (int) values[1]; 
+                } 
+        } else if (cmd == "camera") { //camera parser 
           validinput = readvals(s,10,values); // 10 values eye cen up fov
           if (validinput) {
 
@@ -276,45 +135,35 @@ void readfile(const char* filename)
             upinit[0]=values[6];
             upinit[1]=values[7];
             upinit[2]=values[8];
-            upinit = Transform::upvector(upinit, eyeinit-center);
             fovy = values[9];
-
+            fovx = 2 * atan(tan(fovy * 0.5) * w/h);
           }
-        }
-
-        // I've left the code for loading objects in the skeleton, so 
-        // you can get a sense of how this works.  
-        // Also look at demo.txt to get a sense of why things are done this way.
-        else if (cmd == "sphere" || cmd == "cube" || cmd == "teapot") {
-          if (numobjects == maxobjects) { // No more objects 
-            cerr << "Reached Maximum Number of Objects " << numobjects << " Will ignore further objects\n";
-          } else {
-            validinput = readvals(s, 1, values); 
-            if (validinput) {
-              object * obj = &(objects[numobjects]); 
-              obj->size = values[0]; 
-
-              // Set the object's light properties
-              for (i = 0; i < 4; i++) {
-                (obj->ambient)[i] = ambient[i]; 
-                (obj->diffuse)[i] = diffuse[i]; 
-                (obj->specular)[i] = specular[i]; 
-                (obj->emission)[i] = emission[i];
-              }
-              obj->shininess = shininess; 
+        }else if (cmd == "sphere" || cmd == "tri" || cmd == "trinormal") {
+          object * obj = &(objects[numobjects]); 
+          validinput = readvals(s, 1, values); 
+          if(validinput){
+            if (cmd == "sphere") {
+              obj -> sphere_rad = values[0];
+            }else if (cmd == "tri"){
+              obj -> tri_v1 = values[0];
+              obj -> tri_v2 = values[1];
+              obj -> tri_v3 = values[2];
+            }else{
+              obj -> tri_norm_v1 = values[0];
+              obj -> tri_norm_v2 = values[1];
+              obj -> tri_norm_v3 = values[2];
+            }
+            // Set the object's light properties
+            for (i = 0; i < 4; i++) {
+              (obj->ambient)[i] = ambient[i]; 
+              (obj->diffuse)[i] = diffuse[i]; 
+              (obj->specular)[i] = specular[i]; 
+              (obj->emission)[i] = emission[i];
+            }
+            obj->shininess = shininess; 
 
               // Set the object's transform
-              obj->transform = transfstack.top(); 
-
-              // Set the object's type
-              if (cmd == "sphere") {
-                obj->type = sphere; 
-              } else if (cmd == "cube") {
-                obj->type = cube; 
-              } else if (cmd == "teapot") {
-                obj->type = teapot; 
-              }
-            }
+            obj->transform = transfstack.top(); 
             ++numobjects; 
           }
         }
@@ -386,19 +235,9 @@ void readfile(const char* filename)
       }
       getline (in, str); 
     }
-
-    // Set up initial position for eye, up and amount
-    // As well as booleans 
-
     eye = eyeinit; 
     up = upinit; 
-    amount = amountinit;
-    sx = sy = 1.0;  // keyboard controlled scales in x and y 
-    tx = ty = 0.0;  // keyboard controllled translation in x and y  
-    useGlu = true; // don't use the glu perspective/lookat fns
-
-    glEnable(GL_DEPTH_TEST);
-  } else {
+  }else {
     cerr << "Unable to Open Input Data File " << filename << "\n"; 
     throw 2; 
   }

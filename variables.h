@@ -60,9 +60,18 @@ EXTERN GLfloat shininess ;
 // For multiple objects, read from a file.  
 const int maxobjects = 10 ; 
 EXTERN int numobjects ; 
+EXTERN int maxverts ;
+EXTERN int maxvertnorms ;
+
 EXTERN struct object {
-  
-  GLfloat size ; // don't need this field
+  float sphere_rad = std::numeric_limits<float>::min();
+  int tri_v1 = -1;
+  int tri_v2 = -1;
+  int tri_v3 = -1;
+  int tri_norm_v1 = -1;
+  int tri_norm_v2 = -1;
+  int tri_norm_v3 = -1;
+
   GLfloat ambient[4] ; 
   GLfloat diffuse[4] ; 
   GLfloat specular[4] ;
@@ -71,19 +80,8 @@ EXTERN struct object {
   mat4 transform ; 
 } objects[maxobjects];
 //if this is too slow, we might change this 
-EXTERN vector<vector<float>> vertex;
-EXTERN vector<vector<float>> vertexNormal;
-EXTERN struct sphere : object{
-  GLfloat radius; 
-}sphere;
-EXTERN struct triangle : object{
-  vec3 vertex;
-}triangle;
-EXTERN struct triangleNormal{
-  vec3 vertex;
-}triangleNormal;
-
-
+EXTERN vector<vector<float>> vertexs;
+EXTERN vector<vector<float>> vertexNormals;
 
 // EXTERN struct vertex{
 //   GLfloat x;
