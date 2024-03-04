@@ -72,7 +72,7 @@ bool readvals(stringstream &s, const int numvals, GLfloat* values)
   return true; 
 }
 
-void readfilenew(const char* filename) {
+void readfile(const char* filename) {
   string str, cmd; 
   ifstream in;
   in.open(filename); 
@@ -104,12 +104,12 @@ void readfilenew(const char* filename) {
         }
         else if (cmd == "vertex"){
           validinput = readvals(s,3,values);
-          vector<float> curvert = {values[0], values[1], values[2]};
+          vector<float> curvert(values, values+3);
           vertexs.push_back(curvert);
         }
         else if (cmd == "vertexnormal"){
           validinput = readvals(s,6,values);
-          vector<float> curvertnorm = {values[0], values[1], values[2], values[3], values[4], values[5]};
+          vector<float> curvertnorm(values, values+6);;
           vertexNormals.push_back(curvertnorm);
         }
         else if (cmd == "size") {

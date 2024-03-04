@@ -6,6 +6,7 @@
 // This is the basic include file for the global variables in the program.  
 // Since all files need access to it, we define EXTERN as either blank or 
 // extern, depending on if included in the main program or not.  
+using namespace std; 
 
 #ifdef MAINPROGRAM 
 #define EXTERN 
@@ -24,6 +25,7 @@ vec3 center(0.0,0.0,0.0) ; // Center look at point
 int amountinit = 5;
 int w = 500, h = 500 ; // width and height 
 float fovy = 90.0 ; // For field of view
+float fovx = 90.0;
 #else 
 EXTERN vec3 eyeinit ; 
 EXTERN vec3 upinit ; 
@@ -58,7 +60,7 @@ EXTERN GLfloat emission[4] ;
 EXTERN GLfloat shininess ; 
 
 // For multiple objects, read from a file.  
-const int maxobjects = 10 ; 
+const int maxobjects = 50 ; 
 EXTERN int numobjects ; 
 EXTERN int maxverts ;
 EXTERN int maxvertnorms ;
@@ -80,8 +82,8 @@ EXTERN struct object {
   mat4 transform ; 
 } objects[maxobjects];
 //if this is too slow, we might change this 
-EXTERN vector<vector<float>> vertexs;
-EXTERN vector<vector<float>> vertexNormals;
+EXTERN vector< vector<float> > vertexs;
+EXTERN vector< vector<float> > vertexNormals;
 
 // EXTERN struct vertex{
 //   GLfloat x;
