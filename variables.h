@@ -60,19 +60,20 @@ EXTERN GLfloat emission[4] ;
 EXTERN GLfloat shininess ; 
 
 // For multiple objects, read from a file.  
-const int maxobjects = 50 ; 
+const int maxobjects = 300 ; 
 EXTERN int numobjects ; 
 EXTERN int maxverts ;
 EXTERN int maxvertnorms ;
-
 EXTERN struct object {
-  float sphere_rad = std::numeric_limits<float>::min();
-  int tri_v1 = -1;
-  int tri_v2 = -1;
-  int tri_v3 = -1;
-  int tri_norm_v1 = -1;
-  int tri_norm_v2 = -1;
-  int tri_norm_v3 = -1;
+  string type ; 
+  float sphere_rad ;
+  vec3 sphere_loc ;
+  vec3 tri_v1 ;
+  vec3 tri_v2 ;
+  vec3 tri_v3 ;
+  vec3 tri_norm_v1 ;
+  vec3 tri_norm_v2 ;
+  vec3 tri_norm_v3 ;
 
   GLfloat ambient[4] ; 
   GLfloat diffuse[4] ; 
@@ -80,10 +81,11 @@ EXTERN struct object {
   GLfloat emission[4] ; 
   GLfloat shininess ;
   mat4 transform ; 
-} objects[maxobjects];
+}objects[maxobjects];
 //if this is too slow, we might change this 
-EXTERN vector< vector<float> > vertexs;
-EXTERN vector< vector<float> > vertexNormals;
+// EXTERN vector< object > objects;
+EXTERN vector< vec3 > vertexs;
+EXTERN vector< vec3 > vertexNormals;
 
 // EXTERN struct vertex{
 //   GLfloat x;

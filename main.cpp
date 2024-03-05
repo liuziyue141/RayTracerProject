@@ -26,26 +26,26 @@ using namespace std;
 int main(int argc, char* argv[]) {
     FreeImage_Initialise();
     readfile(argv[1]) ; 
-    for (int i = 0; i < maxobjects; ++i) {
+    for (int i = 0; i < numobjects; ++i) {
         cout << "Object " << i << ":\n";
-        cout << "  Sphere Radius: " << objects[i].sphere_rad << "\n";
-        cout << "  Triangle Vertices: " << objects[i].tri_v1 << ", " << objects[i].tri_v2 << ", " << objects[i].tri_v3 << "\n";
+        if(objects[i].type == "sphere"){
+            cout << "  Sphere Radius: " << objects[i].sphere_rad << "\n";
+        }else if (objects[i].type == "tri"){
+            cout << "  Triangle Vertices: " << objects[i].tri_v1[0] << ", " << objects[i].tri_v1[1] << ", " << objects[i].tri_v1[2] << "\n";
+            cout << "  Triangle Vertices: " << objects[i].tri_v2[0] << ", " << objects[i].tri_v2[1] << ", " << objects[i].tri_v2[2] << "\n";
+            cout << "  Triangle Vertices: " << objects[i].tri_v3[0] << ", " << objects[i].tri_v3[1] << ", " << objects[i].tri_v3[2] << "\n";
         // ... Print other members of the object struct
-
-        // Print vertex and vertex normal data if needed
-        cout << "  Vertex Data:\n";
-        for (const auto& vertex : vertexs[i]) {
-            cout << "   " << vertex << " ";
+        }else{
+            cout << "  Triangle Vertices: " << objects[i].tri_norm_v1[0] << ", " << objects[i].tri_norm_v1[1] << ", " << objects[i].tri_norm_v1[2] << "\n";
+            cout << "  Triangle Vertices: " << objects[i].tri_norm_v2[0] << ", " << objects[i].tri_norm_v2[1] << ", " << objects[i].tri_norm_v2[2] << "\n";
+            cout << "  Triangle Vertices: " << objects[i].tri_norm_v3[0] << ", " << objects[i].tri_norm_v3[1] << ", " << objects[i].tri_norm_v3[2] << "\n";
         }
-        cout << "\n";
-
-        cout << "  Vertex Normal Data:\n";
-        for (const auto& normal : vertexNormals[i]) {
-            cout << "    " << normal << " ";
-        }
+        
         cout << "\n";
 
         cout << "\n";
     }
+    FreeImage_DeInitialise();
+    return 0;
 
 }

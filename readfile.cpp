@@ -97,19 +97,23 @@ void readfile(const char* filename) {
         if(cmd == "maxverts"){
           validinput = readvals(s,1,values);
           maxverts = values[0];
+          //vertexs = new vector<vec3>(maxverts);
         }
         else if (cmd == "maxvertnorms"){
           validinput = readvals(s,1,values);
           maxvertnorms = values[0];
+          //vertexNormals = new vector<vec3>(2*maxvertnorms);
         }
         else if (cmd == "vertex"){
           validinput = readvals(s,3,values);
-          vector<float> curvert(values, values+3);
+          vec3 curvert = vec3(values[0], values[1], values[2]);
           vertexs.push_back(curvert);
         }
         else if (cmd == "vertexnormal"){
           validinput = readvals(s,6,values);
-          vector<float> curvertnorm(values, values+6);;
+          vec3 curvertvert = vec3 (values[0], values[1], values[2]);
+          vertexNormals.push_back(curvertvert);
+          vec3 curvertnorm = vec3 (values[3], values[4], values[5]);
           vertexNormals.push_back(curvertnorm);
         }
         else if (cmd == "size") {
@@ -135,36 +139,48 @@ void readfile(const char* filename) {
             upinit[0]=values[6];
             upinit[1]=values[7];
             upinit[2]=values[8];
-            fovy = values[9];
-            fovx = 2 * atan(tan(fovy * 0.5) * w/h);
+            fovy = values[9]/180*pi; // here change made in radians
+            fovx = 2 * atan(tan(fovy * 0.5) * w/h); // in radians 
           }
         }else if (cmd == "sphere" || cmd == "tri" || cmd == "trinormal") {
-          object * obj = &(objects[numobjects]); 
-          validinput = readvals(s, 1, values); 
-          if(validinput){
-            if (cmd == "sphere") {
-              obj -> sphere_rad = values[0];
-            }else if (cmd == "tri"){
-              obj -> tri_v1 = values[0];
-              obj -> tri_v2 = values[1];
-              obj -> tri_v3 = values[2];
-            }else{
-              obj -> tri_norm_v1 = values[0];
-              obj -> tri_norm_v2 = values[1];
-              obj -> tri_norm_v3 = values[2];
-            }
-            // Set the object's light properties
-            for (i = 0; i < 4; i++) {
-              (obj->ambient)[i] = ambient[i]; 
-              (obj->diffuse)[i] = diffuse[i]; 
-              (obj->specular)[i] = specular[i]; 
-              (obj->emission)[i] = emission[i];
-            }
-            obj->shininess = shininess; 
+          if (numobjects == maxobjects) { // No more objects 
+            cerr << "Reached Maximum Number of Objects " << numobjects << " Will ignore further objects\n";
+          } 
+          else {
+            object * obj = &(objects[numobjects]);  
+            if(validinput){
+              obj -> type = cmd;
+              if (cmd == "sphere") {
+                validinput = readvals(s, 4, values);
+                obj -> sphere_loc = vec3(values[0], values[1], values[2]);
+                obj -> sphere_rad = values[3];
+              }else if (cmd == "tri"){
+                validinput = readvals(s, 3, values);
+                obj -> tri_v1 = vertexs.at(values[0]);
+                obj -> tri_v2 = vertexs.at(values[1]);
+                obj -> tri_v3 = vertexs.at(values[2]);
+              }else{
+                validinput = readvals(s, 6, values);
+                obj -> tri_v1 = vertexNormals.at(2*values[0]);
+                obj -> tri_norm_v1 = vertexNormals.at(2*values[0]+1);
+                obj -> tri_v2 = vertexNormals.at(2*values[1]);
+                obj -> tri_norm_v2 = vertexNormals.at(2*values[1]+1);
+                obj -> tri_v3 = vertexNormals.at(2*values[2]);
+                obj -> tri_norm_v3 = vertexNormals.at(2*values[2]+1);
+              }
+              // Set the object's light properties
+              for (i = 0; i < 4; i++) {
+                (obj->ambient)[i] = ambient[i]; 
+                (obj->diffuse)[i] = diffuse[i]; 
+                (obj->specular)[i] = specular[i]; 
+                (obj->emission)[i] = emission[i];
+              }
+              obj->shininess = shininess; 
 
-              // Set the object's transform
-            obj->transform = transfstack.top(); 
-            ++numobjects; 
+                // Set the object's transform
+              obj->transform = transfstack.top(); 
+              ++numobjects; 
+            }
           }
         }
 
