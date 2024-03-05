@@ -26,6 +26,10 @@ using namespace std;
 int main(int argc, char* argv[]) {
     FreeImage_Initialise();
     readfile(argv[1]) ; 
+    cout << "fovx " << fovx << ":\n";
+    cout << "fovy " << fovy << ":\n";
+    cout << "eye " << eye[0] << ", " << eye[1] << ", " << eye[2] << ":\n";
+    cout << "up " << up[0] << ", " << up[1] << ", " << up[2] << ":\n";
     for (int i = 0; i < numobjects; ++i) {
         cout << "Object " << i << ":\n";
         if(objects[i].type == "sphere"){
@@ -39,10 +43,8 @@ int main(int argc, char* argv[]) {
             cout << "  Triangle Vertices: " << objects[i].tri_norm_v1[0] << ", " << objects[i].tri_norm_v1[1] << ", " << objects[i].tri_norm_v1[2] << "\n";
             cout << "  Triangle Vertices: " << objects[i].tri_norm_v2[0] << ", " << objects[i].tri_norm_v2[1] << ", " << objects[i].tri_norm_v2[2] << "\n";
             cout << "  Triangle Vertices: " << objects[i].tri_norm_v3[0] << ", " << objects[i].tri_norm_v3[1] << ", " << objects[i].tri_norm_v3[2] << "\n";
-        }
-        
+        }        
         cout << "\n";
-
         cout << "\n";
     }
     FreeImage_DeInitialise();
