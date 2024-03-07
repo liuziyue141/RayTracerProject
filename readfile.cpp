@@ -21,25 +21,8 @@
 /*****************************************************************************/
 
 // Basic includes to get this file to work.  
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <deque>
-#include <stack>
-#ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#include <OpenGL/glext.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/glew.h>
-#include <GL/glut.h>
-#endif
-#include "Transform.h" 
-
-using namespace std;
-#include "variables.h" 
 #include "readfile.h"
+using namespace std;
 
 // You may not need to use the following two functions, but it is provided
 // here for convenience

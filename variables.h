@@ -6,8 +6,18 @@
 // This is the basic include file for the global variables in the program.  
 // Since all files need access to it, we define EXTERN as either blank or 
 // extern, depending on if included in the main program or not.  
+#pragma once
 using namespace std; 
-
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/glext.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+#include <string>
+#include <vector>
 #ifdef MAINPROGRAM 
 #define EXTERN 
 #else 

@@ -17,13 +17,15 @@ endif
 
 RM = /bin/rm -f 
 all: transforms
-transforms: main.o Transform.o readfile.o variables.h readfile.h Transform.h 
-	$(CC) $(CFLAGS) -o tranforms main.o Transform.o readfile.o $(INCFLAGS) $(LDFLAGS) 
+transforms: main.o Transform.o readfile.o raytracer.o variables.h readfile.h Transform.h raytracer.h
+	$(CC) $(CFLAGS) -o tranforms main.o Transform.o readfile.o raytracer.o $(INCFLAGS) $(LDFLAGS) 
 main.o: main.cpp Transform.h variables.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c main.cpp
 readfile.o: readfile.cpp readfile.h variables.h 
 	$(CC) $(CFLAGS) $(INCFLAGS) -c readfile.cpp
 Transform.o: Transform.cpp Transform.h 
-	$(CC) $(CFLAGS) $(INCFLAGS) -c Transform.cpp  
+	$(CC) $(CFLAGS) $(INCFLAGS) -c Transform.cpp 
+raytracer.o: raytracer.cpp raytracer.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c raytracer.cpp
 clean: 
 	$(RM) *.o transforms *.png

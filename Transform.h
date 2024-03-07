@@ -4,6 +4,7 @@
 // Rotate is a helper function
 
 // Include the helper glm library, including matrix transform extensions
+#pragma once
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
