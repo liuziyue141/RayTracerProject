@@ -66,10 +66,12 @@ void traceRay(){
         for(int j = 0; j<w; j++){
             vec3 ray = RayThruPixel(i, j);
             int objectId = Intersect(ray);
-            object* obj = &(objects[i]);
-            color.rgbRed = (double) obj->diffuse[0]*255.0;
-            color.rgbGreen = (double) obj->diffuse[1]*255.0;
-            color.rgbBlue = (double) obj->diffuse[2]*255.0;
+            if(objectId>=0){
+                object* obj = &(objects[objectId]);
+                color.rgbRed = (double) obj->diffuse[0]*255.0;
+                color.rgbGreen = (double) obj->diffuse[1]*255.0;
+                color.rgbBlue = (double) obj->diffuse[2]*255.0;
+            }
             FreeImage_SetPixelColor(bitmap, i, j, &color);
         }
     }
