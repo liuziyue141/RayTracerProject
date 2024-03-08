@@ -43,7 +43,7 @@ void Transform::up(float degrees, vec3& eye, vec3& up)
 
 mat4 Transform::lookAt(const vec3 &eye, const vec3 &center, const vec3 &up) 
 {
-  vec3 w = glm::normalize(eye);
+  vec3 w = glm::normalize(eye - center);
 	vec3 u = glm::normalize(glm::cross(up, w));
 	vec3 v = glm::cross(w, u);
 	mat4 lookAtMatrix(

@@ -32,7 +32,9 @@ int main(int argc, char* argv[]) {
     cout << "eye " << eye[0] << ", " << eye[1] << ", " << eye[2] << ":\n";
     cout << "up " << up[0] << ", " << up[1] << ", " << up[2] << ":\n";
     for (int i = 0; i < numobjects; ++i) {
+        cout << "type" << objects[i].type << endl;
         cout << "Object " << i << ":\n";
+        cout << "diffuse color1 " << objects[i].diffuse[0]  << " 2 " << objects[i].diffuse[1] << " 3 " << objects[i].diffuse[2]<< endl;
         if(objects[i].type == "sphere"){
             cout << "  Sphere Radius: " << objects[i].sphere_rad << "\n";
         }else if (objects[i].type == "tri"){

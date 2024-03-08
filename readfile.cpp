@@ -99,6 +99,44 @@ void readfile(const char* filename) {
           vec3 curvertnorm = vec3 (values[3], values[4], values[5]);
           vertexNormals.push_back(curvertnorm);
         }
+         else if (cmd == "ambient") {
+          validinput = readvals(s, 3, values); // colors 
+          if (validinput) {
+            for (i = 0; i < 3; i++) {
+              ambient[i] = values[i]; 
+            }
+          }
+        } 
+        else if (cmd == "diffuse") {
+          validinput = readvals(s, 3, values); 
+          if (validinput) {
+            for (i = 0; i < 3; i++) {
+              diffuse[i] = values[i]; 
+            }
+          }
+        } 
+        else if (cmd == "specular") {
+          validinput = readvals(s, 3, values); 
+          if (validinput) {
+            for (i = 0; i < 3; i++) {
+              specular[i] = values[i]; 
+            }
+          }
+        } 
+        else if (cmd == "emission") {
+          validinput = readvals(s, 3, values); 
+          if (validinput) {
+            for (i = 0; i < 3; i++) {
+              emission[i] = values[i]; 
+            }
+          }
+        } 
+        else if (cmd == "shininess") {
+          validinput = readvals(s, 1, values); 
+          if (validinput) {
+            shininess = values[0]; 
+          }
+        }
         else if (cmd == "size") {
                 validinput = readvals(s,2,values); 
                 if (validinput) { 
