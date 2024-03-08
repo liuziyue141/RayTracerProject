@@ -70,7 +70,7 @@ EXTERN GLfloat emission[4] ;
 EXTERN GLfloat shininess ; 
 
 // For multiple objects, read from a file.  
-const int maxobjects = 300 ; 
+const int maxobjects = 1000 ; 
 EXTERN int numobjects ; 
 EXTERN int maxverts ;
 EXTERN int maxvertnorms ;
