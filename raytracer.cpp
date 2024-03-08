@@ -14,12 +14,28 @@ int Intersect(Ray &ray){
         object* obj = &(objects[i]);
         if(obj->type == "sphere"){
 
-            // ray.P0 = vec3(glm::inverse(obj->transform)*vec4(ray.P0, 1.0f));
-            // ray.P1 = vec3(glm::inverse(obj->transform)*vec4(ray.P0, 1.0f));
+            vec3 P0 = vec3(obj->inverse_transform*vec4(ray.P0, 1.0f));
+            vec3 P1 = vec3(obj->inverse_transform*vec4(ray.P1, 0.0f));
         
-            float a = glm::dot(ray.P1, ray.P1);
-            float b = 2.0f * glm::dot(ray.P1, ray.P0-(obj->sphere_loc));
-            float c = glm::dot(ray.P0 - obj->sphere_loc, ray.P0 - obj->sphere_loc) - obj->sphere_rad*obj->sphere_rad;
+            // float a = glm::dot(ray.P1, ray.P1);
+            // float b = 2.0f * glm::dot(ray.P1, ray.P0-(obj->sphere_loc));
+            // float c = glm::dot(ray.P0 - obj->sphere_loc, ray.P0 - obj->sphere_loc) - obj->sphere_rad*obj->sphere_rad;
+            // float discriminant = b*b-4*a*c;
+            // if(discriminant>=0){
+            //     float root_minus = (-b-sqrt(discriminant))/(2*a);
+            //     float root_plus = (-b+sqrt(discriminant))/(2*a);
+            //     if(root_minus>0&&min_t>root_minus){
+            //         min_t = root_minus;
+            //         objectId = i;
+            //     }else if (root_plus>0&&min_t>root_plus){
+            //         min_t = root_plus;
+            //         objectId = i;
+            //     }
+            // }
+
+            float a = glm::dot(P1, P1);
+            float b = 2.0f * glm::dot(P1, P0-(obj->sphere_loc));
+            float c = glm::dot(P0 - obj->sphere_loc, P0 - obj->sphere_loc) - obj->sphere_rad*obj->sphere_rad;
             float discriminant = b*b-4*a*c;
             if(discriminant>=0){
                 float root_minus = (-b-sqrt(discriminant))/(2*a);
@@ -34,12 +50,15 @@ int Intersect(Ray &ray){
             }
 
             // ray.P0 = vec3(obj->transform*vec4(ray.P0, 1.0f));
-            // ray.P1 = vec3(obj->transform*vec4(ray.P0, 1.0f));
+            // ray.P1 = vec3(obj->transform*vec4(ray.P1, 0.0f));
 
         }else{
-            vec3 A = vec3(obj->transform*vec4(obj->tri_v1, 1.0f));
-            vec3 B = vec3(obj->transform*vec4(obj->tri_v2, 1.0f));
-            vec3 C = vec3(obj->transform*vec4(obj->tri_v3, 1.0f));
+            // vec3 A = vec3(obj->transform*vec4(obj->tri_v1, 1.0f));
+            // vec3 B = vec3(obj->transform*vec4(obj->tri_v2, 1.0f));
+            // vec3 C = vec3(obj->transform*vec4(obj->tri_v3, 1.0f));
+            vec3 A = obj->tri_v1;
+            vec3 B = obj->tri_v2;
+            vec3 C = obj->tri_v3;
             vec3 n = glm::normalize(glm::cross((C-A), (B-A)));
             float t = (glm::dot(A, n)-glm::dot(ray.P0, n))/glm::dot(ray.P1, n);
             if(t<min_t){

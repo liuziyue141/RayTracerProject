@@ -84,13 +84,13 @@ EXTERN struct object {
   vec3 tri_norm_v1 ;
   vec3 tri_norm_v2 ;
   vec3 tri_norm_v3 ;
-
   GLfloat ambient[4] ; 
   GLfloat diffuse[4] ; 
   GLfloat specular[4] ;
   GLfloat emission[4] ; 
   GLfloat shininess ;
   mat4 transform ; 
+  mat4 inverse_transform ;
 }objects[maxobjects];
 //if this is too slow, we might change this 
 // EXTERN vector< object > objects;

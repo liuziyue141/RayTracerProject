@@ -171,15 +171,17 @@ void readfile(const char* filename) {
             object * obj = &(objects[numobjects]);  
             if(validinput){
               obj -> type = cmd;
+              obj->transform = transfstack.top(); 
+              obj->inverse_transform = glm::inverse(obj->transform);
               if (cmd == "sphere") {
                 validinput = readvals(s, 4, values);
                 obj -> sphere_loc = vec3(values[0], values[1], values[2]);
                 obj -> sphere_rad = values[3];
               }else if (cmd == "tri"){
                 validinput = readvals(s, 3, values);
-                obj -> tri_v1 = vertexs.at(values[0]);
-                obj -> tri_v2 = vertexs.at(values[1]);
-                obj -> tri_v3 = vertexs.at(values[2]);
+                obj -> tri_v1 = vec3(obj->transform * vec4(vertexs.at(values[0]), 1.0f));
+                obj -> tri_v2 = vec3(obj->transform * vec4( vertexs.at(values[1]), 1.0f));
+                obj -> tri_v3 = vec3(obj->transform * vec4( vertexs.at(values[2]), 1.0f));
               }else{
                 validinput = readvals(s, 6, values);
                 obj -> tri_v1 = vertexNormals.at(2*values[0]);
@@ -199,7 +201,6 @@ void readfile(const char* filename) {
               obj->shininess = shininess; 
 
                 // Set the object's transform
-              obj->transform = transfstack.top(); 
               ++numobjects; 
             }
           }
