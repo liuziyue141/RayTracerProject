@@ -141,8 +141,7 @@ vec3 findColor(Ray ray, int objectId, float min_t, vec3 normal){
             }else{
                 vec3 light_dirn = glm::normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
                 vec3 halfvec = normalize(light_dirn + eyedirn);
-                float distance = glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
-                float attentuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
+                
                 // vec3 light_dirn = normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
                 // vec3 halfvec = normalize(light_dirn + eyedirn);
                 // float min_T_light_to_intersection = (vec3(lightpos.x, lightpos.y, lightpos.z) - intersection).x / light_dirn.x;
