@@ -192,7 +192,7 @@ void readfile(const char* filename) {
                 obj -> tri_norm_v3 = vertexNormals.at(2*values[2]+1);
               }
               // Set the object's light properties
-              for (i = 0; i < 4; i++) {
+              for (i = 0; i < 3; i++) {
                 (obj->ambient)[i] = ambient[i]; 
                 (obj->diffuse)[i] = diffuse[i]; 
                 (obj->specular)[i] = specular[i]; 
@@ -206,6 +206,73 @@ void readfile(const char* filename) {
           }
         }
 
+        else if (cmd == "point"){
+          if (numused == numLights) { // No more Lights 
+            cerr << "Reached Maximum Number of Lights " << numused << " Will ignore further lights\n";
+          } else {
+            validinput = readvals(s, 6, values); // Position/color for lts.
+            if (validinput) {
+              // YOUR CODE FOR HW 2 HERE. 
+              // Note that values[0...7] shows the read in values 
+              // Make use of lightposn[] and lightcolor[] arrays in variables.h
+              // Those arrays can then be used in display too.  
+
+              lightposn[4*numused]=values[0];
+              lightposn[4*numused+1]=values[1];
+              lightposn[4*numused+2]=values[2];
+              lightposn[4*numused+3]=0;
+              lightcolor[3*numused]=values[3];
+              lightcolor[3*numused+1]=values[4];
+              lightcolor[4*numused+2]=values[5];
+              ++numused; 
+            }
+          }
+        }
+
+        else if (cmd == "attenuation"){
+          validinput = readvals(s, 3, values); // constant linear quadraticf
+          if (validinput) {
+            constant_atten = values[0];
+            linear_atten = values[1];
+            quadratic_atten = values[2];
+          }
+        }
+
+        else if (cmd == "maxdepth"){
+          validinput = readvals(s, 1, values);
+          if (validinput) {
+            maxdepth = values[0];
+          }
+        }
+
+        // else if (cmd == "output"){
+        //   validinput = readvals(s, 1, values);
+        //   if (validinput) {
+        //     filename = values[0];
+        //   }
+        // }
+        else if (cmd == "directional"){
+          if (numused == numLights) { // No more Lights 
+            cerr << "Reached Maximum Number of Lights " << numused << " Will ignore further lights\n";
+          } else {
+            validinput = readvals(s, 6, values); // Position/color for lts.
+            if (validinput) {
+              // YOUR CODE FOR HW 2 HERE. 
+              // Note that values[0...7] shows the read in values 
+              // Make use of lightposn[] and lightcolor[] arrays in variables.h
+              // Those arrays can then be used in display too.  
+
+              lightposn[4*numused]=values[0];
+              lightposn[4*numused+1]=values[1];
+              lightposn[4*numused+2]=values[2];
+              lightposn[4*numused+3]=1;
+              lightcolor[4*numused]=values[3];
+              lightcolor[4*numused+1]=values[4];
+              lightcolor[4*numused+2]=values[5];
+              ++numused; 
+            }
+          }
+        }
         else if (cmd == "translate") {
           validinput = readvals(s,3,values); 
           if (validinput) {

@@ -57,8 +57,7 @@ EXTERN float tx, ty ; // the translation in x and y
 // Lighting parameter array, similar to that in the fragment shader
 const int numLights = 10 ; 
 EXTERN GLfloat lightposn [4*numLights] ; // Light Positions
-EXTERN GLfloat lightcolor[4*numLights] ; // Light Colors
-EXTERN GLfloat lightransf[4*numLights] ; // Lights transformed by modelview
+EXTERN GLfloat lightcolor[3*numLights] ; // Light Colors
 EXTERN int numused ;                     // How many lights are used 
 
 // Materials (read from file) 
@@ -70,10 +69,19 @@ EXTERN GLfloat emission[4] ;
 EXTERN GLfloat shininess ; 
 
 // For multiple objects, read from a file.  
-const int maxobjects = 300 ; 
+const int maxobjects = 10000 ; 
 EXTERN int numobjects ; 
 EXTERN int maxverts ;
 EXTERN int maxvertnorms ;
+
+EXTERN int constant_atten ;
+EXTERN int linear_atten ;
+EXTERN int quadratic_atten ;
+
+EXTERN int maxdepth ;
+EXTERN string filename ;
+
+
 EXTERN struct object {
   string type ; 
   float sphere_rad ;
@@ -84,10 +92,10 @@ EXTERN struct object {
   vec3 tri_norm_v1 ;
   vec3 tri_norm_v2 ;
   vec3 tri_norm_v3 ;
-  GLfloat ambient[4] ; 
-  GLfloat diffuse[4] ; 
-  GLfloat specular[4] ;
-  GLfloat emission[4] ; 
+  GLfloat ambient [3]; 
+  GLfloat diffuse [3]; 
+  GLfloat specular [3];
+  GLfloat emission [3]; 
   GLfloat shininess ;
   mat4 transform ; 
   mat4 inverse_transform ;
