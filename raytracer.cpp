@@ -5,13 +5,18 @@ struct Ray {
     vec3 P1;
 };
 
-struct id_norm_minT {
-    int objectId;
+struct obj_norm_minT {
+    object* objptr;
     vec3 normal;
     float min_t;
 };
-
-id_norm_minT Intersect(Ray &ray){
+vec3 GLfloat2vec3(GLfloat* floatPtr){
+    return vec3(floatPtr[0], floatPtr[1], floatPtr[2]);
+}
+vec4 GLfloat2vec4(GLfloat* floatPtr){
+    return vec4(floatPtr[0], floatPtr[1], floatPtr[2], floatPtr[3]);
+}
+obj_norm_minT Intersect(Ray &ray){
     int objectId = -1;
     //vec3 P_return;
     vec3 normal = vec3(0,0,0);
@@ -25,32 +30,20 @@ id_norm_minT Intersect(Ray &ray){
             float b = 2.0f * glm::dot(P1, P0-(obj->sphere_loc));
             float c = glm::dot(P0 - obj->sphere_loc, P0 - obj->sphere_loc) - obj->sphere_rad*obj->sphere_rad;
             float discriminant = b*b-4*a*c;
-            if(discriminant>=0){
+            if(discriminant>=1e-5){
                 float root_minus = (-b-sqrt(discriminant))/(2*a);
                 float root_plus = (-b+sqrt(discriminant))/(2*a);
                 if(root_minus>0&&min_t>root_minus){
                     min_t = root_minus;
                     objectId = i;
                     normal = glm::normalize(vec3(glm::transpose(obj->inverse_transform) * vec4((min_t*P1+P0-obj->sphere_loc), 0)));
-
                 }else if (root_plus>0&&min_t>root_plus){
                     min_t = root_plus;
                     objectId = i;
                     normal = glm::normalize(vec3(glm::transpose(obj->inverse_transform) * vec4((min_t*P1+P0-obj->sphere_loc), 0)));
-
                 }
-                //recover p --> normalize (p - center)
-                // vec3 pos = vec3(obj->transform*vec4(P0+P1*min_t, 1));
-                // normal = vec3(obj->inverse_transform*vec4(pos, 1))-obj->sphere_loc;
-                // normal = vec3(glm::transpose(obj->inverse_transform)*(vec4(normal, 0)));
-                // normal = glm::normalize(normal);
             }
-
-
-            // ray.P0 = vec3(obj->transform*vec4(ray.P0, 1.0f));
-            // ray.P1 = vec3(obj->transform*vec4(ray.P1, 0.0f));
-
-        }else{
+     }else{
             vec3 A = obj->tri_v1;
             vec3 B = obj->tri_v2;
             vec3 C = obj->tri_v3;
@@ -74,7 +67,7 @@ id_norm_minT Intersect(Ray &ray){
                 float beta = factor_beta / det;
                 float gamma = factor_gamma / det;
                 float alpha = 1.0 - gamma - beta;
-                if(alpha>=0 && beta>=0 && gamma >= 0){
+                if(alpha>=-1e-6 && beta>=-1e-6 && gamma >= -1e-6){
                     min_t = t;
                     objectId = i;
                     if(obj->type == "trinormal"){
@@ -87,14 +80,16 @@ id_norm_minT Intersect(Ray &ray){
             }
         }
     }
-    id_norm_minT result;
-    result.objectId = objectId;
+    obj_norm_minT result;
+    if(objectId>=0){
+        result.objptr = &(objects[objectId]);
+    }else{
+        result.objptr = nullptr;
+    }
     result.normal = normal;
     result.min_t = min_t;
     return result;
 }
-
-
 
 vec3 ComputeLight (vec3 direction, vec3 lightcolor, vec3 normal, vec3 halfvec, vec3 mydiffuse,
      vec3 myspecular, float myshininess) {
@@ -106,51 +101,81 @@ vec3 ComputeLight (vec3 direction, vec3 lightcolor, vec3 normal, vec3 halfvec, v
         float nDotH = dot(normal, halfvec) ; 
         vec3 phong = myspecular * lightcolor * pow (max(nDotH, 0.0f), myshininess) ;
         retval = (lambert + phong) ; 
+        //cout << "retrval: " << retval.x << ", " << retval.y << ", " << retval.z << endl;
         return retval ;            
 } 
 
 
 vec3 findColor(Ray ray, int objectId, float min_t, vec3 normal){
     vec3 intersection = ray.P0 + ray.P1 * min_t;
-    vec3 finalcolor = vec3(objects[objectId].ambient[0], objects[objectId].ambient[1], objects[objectId].ambient[2])
-                    + vec3(objects[objectId].emission[0], objects[objectId].emission[1], objects[objectId].emission[2]);
+    vec3 finalcolor = GLfloat2vec3(objects[objectId].ambient) + GLfloat2vec3(objects[objectId].emission);
 
-    for(int i = 0; i<numLights; i++){
-            vec4 lightpos = vec4(lightposn[4*i], lightposn[4*i+1], lightposn[4*i+2], lightposn[4*i+3]);
-            vec3 light_color = vec3(lightcolor[3*i], lightcolor[3*i+1], lightcolor[3*i+2]);
+    for(int i = 0; i<numused; i++){
+            vec4 lightpos = GLfloat2vec4(lightposn+4*i);
+            vec3 light_color = GLfloat2vec3(lightcolor+3*i);
             vec3 eyedirn = -normalize(ray.P1);
-            vec3 diffuse = vec3(objects[objectId].diffuse[0], objects[objectId].diffuse[1], objects[objectId].diffuse[2]);
-            vec3 specular = vec3(objects[objectId].specular[0], objects[objectId].specular[1], objects[objectId].specular[2]);
+            vec3 diffuse = GLfloat2vec3(objects[objectId].diffuse);
+            vec3 specular = GLfloat2vec3(objects[objectId].specular);
             float visibility = 1;
             if(lightpos.w==0){
-                vec3 light_dirn = glm::normalize(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
+                vec3 light_dirn = glm::normalize(vec3(lightpos) - intersection);
                 vec3 halfvec = normalize(light_dirn + eyedirn);
-                float distance = glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
+                float distance = glm::length(vec3(lightpos) - intersection);
                 float attentuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
                 Ray light_to_object;
                 light_to_object.P0 = vec3(lightpos);
                 light_to_object.P1 = -light_dirn;
-                id_norm_minT light2object = Intersect(light_to_object);
-                if (light2object.min_t<glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection)-1e-4){
-                    // cout << "min t for camera ray " <<glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection) << ", min t for light ray " << light2object.min_t <<endl;
-                    // cout << " camera object " <<objectId << ", light ray object " << light2object.objectId <<endl;
-
+                obj_norm_minT light2object = Intersect(light_to_object);
+                //here I made the change
+                if (light2object.min_t<distance-1e-2){
                     visibility = 0;
                 }
                 finalcolor += attentuation*visibility*ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
             }else{
-                vec3 light_dirn = glm::normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
+                vec3 light_dirn = glm::normalize(vec3(lightpos));
                 vec3 halfvec = normalize(light_dirn + eyedirn);
-                
-                // vec3 light_dirn = normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
-                // vec3 halfvec = normalize(light_dirn + eyedirn);
-                // float min_T_light_to_intersection = (vec3(lightpos.x, lightpos.y, lightpos.z) - intersection).x / light_dirn.x;
-
-                // finalcolor += ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
-
+                Ray minusLightRay;
+                minusLightRay.P0 = intersection;
+                minusLightRay.P1 = light_dirn;
+                minusLightRay.P0 = intersection+(float)1e-3*minusLightRay.P1;
+                obj_norm_minT object2light = Intersect(minusLightRay);
+                if(object2light.min_t != FLT_MAX){
+                    visibility = 0 ;
+                }
+                finalcolor += visibility*ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
             }
         }
+    return finalcolor;
+    
+}
+
+vec3 findcolorWithReflectiveEffect(Ray ray){
+    int objectId = -1;
+    int counter = 0;
+    vec3 finalcolor = vec3(0, 0, 0);
+    vec3 colorVector;
+    vec3 specularMultiplier = vec3(1, 1, 1);
+    do{
+      obj_norm_minT intersectionInfo =  Intersect(ray);
+      if(intersectionInfo.objptr!=nullptr){
+        objectId = intersectionInfo.objptr -> id;
+        colorVector = findColor(ray, objectId, intersectionInfo.min_t, intersectionInfo.normal);
+
+        //cout <<  "colorVector: " << colorVector.x << ", " << colorVector.y << ", " << colorVector.z << endl;
+
+        finalcolor += specularMultiplier * colorVector;
+        specularMultiplier = specularMultiplier * GLfloat2vec3(intersectionInfo.objptr -> specular);
+        float LdotN = dot(-ray.P1, intersectionInfo.normal);
+        ray.P0 = ray.P0 + ray.P1 * intersectionInfo.min_t;
+        ray.P1 = ray.P1 + 2.0f*LdotN*intersectionInfo.normal;
+        ray.P0 = ray.P0 + (float)1e-2*ray.P1;
+      }else{
+        objectId = -1;
+      }
+      counter++;
+    }while(objectId!=-1 && counter<maxdepth);
     //cout << "color: r: " << finalcolor.x << ", g: " << finalcolor.y << ", b: " << finalcolor.z << endl;
+
     return finalcolor;
 }
 
@@ -175,26 +200,40 @@ void traceRay(){
     for(int i = 0; i<w; i++){
         for(int j = 0; j<h; j++){
             Ray ray = RayThruPixel(i, j);
-            //int objectId = Intersect(ray);
-            id_norm_minT result = Intersect(ray);
-            int objectId = result.objectId;
+            vec3 colorVector = findcolorWithReflectiveEffect(ray);
+            color.rgbRed = min(colorVector.z* 255.0f, 255.0f);
+            color.rgbGreen = min(colorVector.y * 255.0f, 255.0f);
+            color.rgbBlue = min(colorVector.x * 255.0f, 255.0f);
+            // if(color.rgbRed!=0){
+            //     //cout<< "i: " << i << " j: "<< j << endl;
+            //     cout << "color at pixel: width: " << i << ", height: " << j << ", colorVector: " << colorVector.x << ", " << colorVector.y << ", " << colorVector.z << endl;
+            // }
+            // //int objectId = Intersect(ray);
+            // obj_norm_minT result = Intersect(ray);
+            // // int objectId = result.objptr->id;
 
-            if(objectId>=0){
-                object* obj = &(objects[objectId]);
-                vec3 colorVector = findColor(ray, objectId, result.min_t, result.normal);
-                // cout << "min t" << result.min_t << endl;
-                // cout << "normal for pixel: x: " << result.normal.x << ", y: " << result.normal.y << ", z: " << result.normal.z << endl;
+            // if(result.objptr!=nullptr){
+            //     //object* obj = &(objects[objectId]);
+            //     int objectId = result.objptr -> id;
+            //     vec3 colorVector = findColor(ray, objectId, result.min_t, result.normal);
+            //     if(colorVector.x == 0 && colorVector.y == 0 && colorVector.z == 0){
+            //         cout << "color at pixel: width: " << i << ", height: " << j << endl;
+            //     }
+            //     // cout << "min t" << result.min_t << endl;
+            //     // cout << "normal for pixel: x: " << result.normal.x << ", y: " << result.normal.y << ", z: " << result.normal.z << endl;
+            //     // cout << "color at pixel: width: " << i << ", height: " << j << ", colorVector: " << colorVector.x << ", " << colorVector.y << ", " << colorVector.z << endl;
+            //     color.rgbRed = colorVector.z* 255.0f;
+            //     color.rgbGreen = colorVector.y * 255.0f;
+            // //     color.rgbBlue = colorVector.x * 255.0f;
+            //     // color.rgbRed = 255.0f;
+            //     // color.rgbGreen = 0.0;
+            //     // color.rgbBlue = 0.0f;
 
-                // cout << "color at pixel: width: " << i << ", height: " << j << ", colorVector: " << colorVector.x << ", " << colorVector.y << ", " << colorVector.z << endl;
-                color.rgbRed = colorVector.z* 255.0f;
-                color.rgbGreen = colorVector.y * 255.0f;
-                color.rgbBlue = colorVector.x * 255.0f;
-
-            }else{
-                color.rgbRed = 0;
-                color.rgbGreen = 0;
-                color.rgbBlue = 0;
-            }
+            // }else{
+            //     color.rgbRed = 0;
+            //     color.rgbGreen = 0;
+            //     color.rgbBlue = 0;
+            // }
             FreeImage_SetPixelColor(bitmap, i, h-j-1, &color);
         }
     }

@@ -83,6 +83,7 @@ EXTERN string filename ;
 
 
 EXTERN struct object {
+  int id ;
   string type ; 
   float sphere_rad ;
   vec3 sphere_loc ;

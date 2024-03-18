@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     readfile(argv[1]) ; 
     traceRay();
 
-    // Print out the variables to verify parsing
+    //Print out the variables to verify parsing
     std::cout << "Constant Attenuation: " << constant_atten << std::endl;
     std::cout << "Linear Attenuation: " << linear_atten << std::endl;
     std::cout << "Quadratic Attenuation: " << quadratic_atten << std::endl;
@@ -72,6 +72,13 @@ int main(int argc, char* argv[]) {
         cout << "\n";
         cout << "\n";
     }
+     for (int i = 0; i < numused; ++i) {
+        std::cout << "Light " << i << " Position: (" << lightposn[4*i] << ", " << lightposn[4*i+1] << ", "
+                  << lightposn[4*i+2] << ", " << lightposn[4*i+3] << ")" << std::endl;
+        std::cout << "Light " << i << " Color: (" << lightcolor[3*i] << ", " << lightcolor[3*i+1] << ", "
+                  << lightcolor[3*i+2] << ")" << std::endl;
+    }
+
     FreeImage_DeInitialise();
     return 0;
 
