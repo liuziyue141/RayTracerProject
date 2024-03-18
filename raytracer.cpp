@@ -126,7 +126,7 @@ vec3 findColor(Ray ray, int objectId, float min_t, vec3 normal){
                 vec3 light_dirn = glm::normalize(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
                 vec3 halfvec = normalize(light_dirn + eyedirn);
                 float distance = glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
-                float attentuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
+                float attenuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
                 Ray light_to_object;
                 light_to_object.P0 = vec3(lightpos);
                 light_to_object.P1 = -light_dirn;
@@ -137,18 +137,25 @@ vec3 findColor(Ray ray, int objectId, float min_t, vec3 normal){
 
                     visibility = 0;
                 }
-                finalcolor += attentuation*visibility*ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
-            }else{
+                finalcolor += attenuation*visibility*ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
+            }
+            else{
                 vec3 light_dirn = glm::normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
                 vec3 halfvec = normalize(light_dirn + eyedirn);
-                float distance = glm::length(vec3(lightpos.x, lightpos.y, lightpos.z) - intersection);
-                float attentuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
-                // vec3 light_dirn = normalize(vec3(lightpos.x, lightpos.y, lightpos.z));
-                // vec3 halfvec = normalize(light_dirn + eyedirn);
-                // float min_T_light_to_intersection = (vec3(lightpos.x, lightpos.y, lightpos.z) - intersection).x / light_dirn.x;
+                float attenuation = 1.0f;
 
-                // finalcolor += ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
-
+                Ray object_to_light;
+                object_to_light.P0 = intersection;
+                object_to_light.P1 = -light_dirn;
+                id_norm_minT light2object = Intersect(object_to_light);
+                cout << light2object.min_t << endl;
+                if (light2object.min_t == INFINITY) {
+                    visibility = 1;
+                }
+                else {
+                    visibility = 0;
+                }
+                finalcolor += attenuation * visibility * ComputeLight(light_dirn, light_color, normal, halfvec, diffuse, specular, shininess);
             }
         }
     //cout << "color: r: " << finalcolor.x << ", g: " << finalcolor.y << ", b: " << finalcolor.z << endl;
