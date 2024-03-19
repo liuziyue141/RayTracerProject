@@ -69,20 +69,21 @@ EXTERN GLfloat emission[4] ;
 EXTERN GLfloat shininess ; 
 
 // For multiple objects, read from a file.  
-const int maxobjects = 10000 ; 
+const int maxobjects = 100000 ; 
 EXTERN int numobjects ; 
 EXTERN int maxverts ;
 EXTERN int maxvertnorms ;
 
-EXTERN int constant_atten ;
-EXTERN int linear_atten ;
-EXTERN int quadratic_atten ;
+EXTERN float constant_atten ;
+EXTERN float linear_atten ;
+EXTERN float quadratic_atten ;
 
 EXTERN int maxdepth ;
 EXTERN string filename ;
 
 
 EXTERN struct object {
+  int id ;
   string type ; 
   float sphere_rad ;
   vec3 sphere_loc ;

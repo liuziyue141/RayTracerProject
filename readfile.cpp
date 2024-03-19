@@ -170,6 +170,7 @@ void readfile(const char* filename) {
           else {
             object * obj = &(objects[numobjects]);  
             if(validinput){
+              obj -> id = numobjects;
               obj -> type = cmd;
               obj->transform = transfstack.top(); 
               obj->inverse_transform = glm::inverse(obj->transform);
@@ -223,7 +224,7 @@ void readfile(const char* filename) {
               lightposn[4*numused+3]=0;
               lightcolor[3*numused]=values[3];
               lightcolor[3*numused+1]=values[4];
-              lightcolor[4*numused+2]=values[5];
+              lightcolor[3*numused+2]=values[5];
               ++numused; 
             }
           }
@@ -266,9 +267,9 @@ void readfile(const char* filename) {
               lightposn[4*numused+1]=values[1];
               lightposn[4*numused+2]=values[2];
               lightposn[4*numused+3]=1;
-              lightcolor[4*numused]=values[3];
-              lightcolor[4*numused+1]=values[4];
-              lightcolor[4*numused+2]=values[5];
+              lightcolor[3*numused]=values[3];
+              lightcolor[3*numused+1]=values[4];
+              lightcolor[3*numused+2]=values[5];
               ++numused; 
             }
           }
