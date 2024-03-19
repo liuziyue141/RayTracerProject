@@ -30,14 +30,14 @@ obj_norm_minT Intersect(Ray &ray){
             float b = 2.0f * glm::dot(P1, P0-(obj->sphere_loc));
             float c = glm::dot(P0 - obj->sphere_loc, P0 - obj->sphere_loc) - obj->sphere_rad*obj->sphere_rad;
             float discriminant = b*b-4*a*c;
-            if(discriminant>=1e-5){
+            if(discriminant>=0){
                 float root_minus = (-b-sqrt(discriminant))/(2*a);
                 float root_plus = (-b+sqrt(discriminant))/(2*a);
-                if(root_minus>0&&min_t>root_minus){
+                if(root_minus>(float)1e-5&&min_t>root_minus){
                     min_t = root_minus;
                     objectId = i;
                     normal = glm::normalize(vec3(glm::transpose(obj->inverse_transform) * vec4((min_t*P1+P0-obj->sphere_loc), 0)));
-                }else if (root_plus>0&&min_t>root_plus){
+                }else if (root_plus>(float)1e-5&&min_t>root_plus){
                     min_t = root_plus;
                     objectId = i;
                     normal = glm::normalize(vec3(glm::transpose(obj->inverse_transform) * vec4((min_t*P1+P0-obj->sphere_loc), 0)));
@@ -50,7 +50,7 @@ obj_norm_minT Intersect(Ray &ray){
             vec3 n = glm::normalize(glm::cross((C-A), (B-A)));
             //vec3 n = glm::normalize(glm::cross((B-A), (C-A)));
             float t = (glm::dot(A, n)-glm::dot(ray.P0, n))/glm::dot(ray.P1, n);
-            if(t<min_t && t>0){
+            if(t<min_t && t>(float)1e-5){
                 vec3 P = ray.P0 + ray.P1*t ;
                 float det = (C.x - A.x)*(B.y - A.y) - (B.x - A.x)*(C.y - A.y);
                 float factor_beta = (C.x - A.x)*(P.y - A.y) - (P.x - A.x)*(C.y - A.y);
@@ -67,7 +67,7 @@ obj_norm_minT Intersect(Ray &ray){
                 float beta = factor_beta / det;
                 float gamma = factor_gamma / det;
                 float alpha = 1.0 - gamma - beta;
-                if(alpha>=-1e-6 && beta>=-1e-6 && gamma >= -1e-6){
+                if(alpha>=-1e-5 && beta>=-1e-5 && gamma >= -1e-5){
                     min_t = t;
                     objectId = i;
                     if(obj->type == "trinormal"){
@@ -121,7 +121,7 @@ vec3 findColor(Ray ray, int objectId, float min_t, vec3 normal){
                 vec3 light_dirn = glm::normalize(vec3(lightpos) - intersection);
                 vec3 halfvec = normalize(light_dirn + eyedirn);
                 float distance = glm::length(vec3(lightpos) - intersection);
-                float attentuation = 1/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
+                float attentuation = 1.0f/(constant_atten+linear_atten*distance+quadratic_atten*distance*distance);
                 Ray light_to_object;
                 light_to_object.P0 = vec3(lightpos);
                 light_to_object.P1 = -light_dirn;
@@ -182,8 +182,9 @@ vec3 findcolorWithReflectiveEffect(Ray ray){
 //using namespace glm;
 
 Ray RayThruPixel(int i, int j){
-    float alpha = tan(fovx/2.0f)*((i-(w/2.0f))/(w/2.0f));
-    float beta = tan(fovy/2.0f)*((h/2.0f)-j)/(h/2.0f);
+
+    float alpha = tan(fovx/2.0f)*(i-((w-1)/2.0f))/(w/2.0f);
+    float beta = tan(fovy/2.0f)*(((h-1)/2.0f)-j)/(h/2.0f);
     vec3 w = glm::normalize(eye - center);
     vec3 u = glm::normalize(glm::cross(up, w));
     vec3 v = glm::cross(w, u);

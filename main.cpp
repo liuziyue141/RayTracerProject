@@ -25,7 +25,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
     FreeImage_Initialise();
     cout << "FreeIage " << FreeImage_GetVersion() << "\n";
-    constant_atten = 1;
+    constant_atten = 1.0f;
     maxdepth = 5;
     ambient[0] = 0.2;
     ambient[1] = 0.2;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Max Depth: " << maxdepth << std::endl;
 
     // Print out the light positions and colors
-    for (int i = 0; i < numused; ++i) {
+    for (int i = 0; i < numused; i++) {
         std::cout << "Light " << i << " Position: (" << lightposn[4*i] << ", " << lightposn[4*i+1] << ", "
                   << lightposn[4*i+2] << ", " << lightposn[4*i+3] << ")" << std::endl;
         std::cout << "Light " << i << " Color: (" << lightcolor[3*i] << ", " << lightcolor[3*i+1] << ", "
@@ -80,6 +80,9 @@ int main(int argc, char* argv[]) {
     }
 
     FreeImage_DeInitialise();
+    // return 0;
+    std::cout << "Constant Attenuation: " << constant_atten << std::endl;
+    std::cout << "Linear Attenuation: " << linear_atten << std::endl;
+    std::cout << "Quadratic Attenuation: " << quadratic_atten << std::endl;
     return 0;
-
 }
