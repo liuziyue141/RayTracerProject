@@ -1,17 +1,47 @@
-Name: Ziyue Liu
 
-Partner's name: Aarav Tiku
+# CSE 167 Assignment 4 - Simple Raytracer
 
-UC online username: Zil085
+## Contributor
+- **Name:** Ziyue Liu
+- **Name:** Aarav Tiku 
 
-Email: zil085@ucsd.edu
+## Development Environment
+- **Platform:** MacOS
+- **Build System:** Make
 
-Test: We have created 3 scene test for this milestone submission 
-and they are stored in ./scnene1-milestone ./scnene2-milestone ./scnene3-milestone
-each directory contains related camera test e.g ./scene1-milestone/Camera-1
+## Build & Run Instructions
+### Compilation
+```bash
+make
+```
 
-Platform: MacOS
+### Running the Program
+```bash
+./tranforms testscenes/scene1.test  # For scene 1
+```
 
-Compilation command: `make`
+## Test Scenes
+We have implemented three test scenes for this milestone submission:
 
-Run command: ./tranforms testscenes/scene1.test (for scene 1)
+### Directory Structure
+```
+./scene1-milestone/
+    Camera-1/
+    ...
+./scene2-milestone/
+    Camera-1/
+    ...
+./scene3-milestone/
+    Camera-1/
+    ...
+```
+
+Each scene directory contains multiple camera test positions to validate different viewing angles and rendering capabilities.
+
+## Implementation Details
+For this milestone submission, we have completed:
+- Camera implementation and positioning
+- Basic ray-surface intersections:
+  - Triangle intersection
+  - Sphere intersection
+- Basic transformations
