@@ -1,5 +1,5 @@
 
-# CSE 167 Assignment 4 - Simple Raytracer
+# Raytracer
 
 ## Contributor
 - **Name:** Ziyue Liu
